@@ -40,6 +40,18 @@ console.log('DFS:', graph2.dfs('V1'));
 console.log('Dijkstra:', graph2.dijkstra('V1'));
 // O Prim não é aplicável para digrafos
 // Ordenação Topológica e Ciclo Euleriano podem ser testados se o digrafo for adequado
+
+const graph3 = readFileData('grafo_nao_orientado.txt');
+console.log('\nGrafo Não Orientado Valorado:', graph3);
+
+// Testes para Grafo Não Orientado Valorado
+console.log('BFS:', graph3.bfs('V1'));
+console.log('DFS:', graph3.dfs('V1'));
+console.log('Dijkstra:', graph3.dijkstra('V1'));
+console.log('Prim:', graph3.prim('V1'));
+console.log('Ordenação Topológica:', graph3.topologicalSort());
+console.log('Ciclo Euleriano:', graph3.hasEulerianCycle());
+
 try {
   console.log('Ordenação Topológica:', graph2.topologicalSort());
 } catch (error) {
