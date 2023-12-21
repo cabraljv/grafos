@@ -61,13 +61,15 @@ class Graph {
   // Implementação simplificada e ilustrativa. Na prática, você precisará de uma fila de prioridades.
   dijkstra(start) {
     const distances = {};
+    const predecessors = {};
     Object.keys(this.nodes).forEach(node => {
       distances[node] = Infinity;
+      predecessors[node] = null;
     });
     distances[start] = 0;
-
+  
     const visited = {};
-
+  
     while (Object.keys(visited).length < Object.keys(this.nodes).length) {
       let closestNode = null;
       Object.keys(distances).forEach(node => {
@@ -75,19 +77,32 @@ class Graph {
           closestNode = node;
         }
       });
-
+  
       visited[closestNode] = true;
-
+  
       this.nodes[closestNode].forEach(neighbor => {
         const distance = distances[closestNode] + this.edges[`${closestNode}-${neighbor}`];
         if (distance < distances[neighbor]) {
           distances[neighbor] = distance;
+          predecessors[neighbor] = closestNode;
         }
       });
     }
-
-    return distances;
+  
+    const paths = {};
+    Object.keys(predecessors).forEach(node => {
+      const path = [];
+      let current = node;
+      while (current !== null) {
+        path.unshift(current);
+        current = predecessors[current];
+      }
+      paths[node] = path;
+    });
+  
+    return { distances, paths };
   }
+  
 
   prim(startNode) {
     const minTree = new Graph();
