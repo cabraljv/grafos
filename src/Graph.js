@@ -58,7 +58,7 @@ class Graph {
     dfsVisit(start);
     return result;
   }
-  // Implementação simplificada e ilustrativa. Na prática, você precisará de uma fila de prioridades.
+  
   dijkstra(start) {
     const distances = {};
     const predecessors = {};
