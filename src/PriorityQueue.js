@@ -31,7 +31,6 @@ class PriorityQueue {
       return this.items.length === 0;
   }
 
-  // Outros métodos conforme necessário
 }
 
 
