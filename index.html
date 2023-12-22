@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Análise de Grafo</title>
+</head>
+
+<body>
+  <script src="./src/Graph.js"></script>
+  <h2>Análise de Grafo</h2>
+  <p>João Victor Cabral</p>
+  <p>Thomás Causin</p>
+
+  <label for="graphInput">Insira o Grafo:</label>
+  <br>
+  <textarea id="graphInput" rows="10" cols="50"></textarea>
+  <br>
+
+  <label for="startVertex">Vértice de Partida (Padrão: V1):</label>
+  <input type="text" id="startVertex" value="V1">
+  <br>
+  <button onclick="analyzeGraph()">Analisar Grafo</button>
+  <div id="output"></div>
+
+
+  <script>
+
+    function isUndirected(lines, numVertices) {
+      for (let i = 1; i < numVertices; i++) {
+        for (let j = 0; j < i; j++) {
+          if (lines[i][j] !== 0) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    function analyzeGraph() {
+            const graphInput = document.getElementById('graphInput').value;
+            const startVertex = document.getElementById('startVertex').value || 'V1';
+            const lines = graphInput.split('\n').map(line => line.trim().split(/\s+/).map(Number));
+            const numVertices = lines.shift()[0];
+            const graph = new Graph();
+            const isGraphUndirected = isUndirected(lines, numVertices);
+
+            // Construindo o grafo com base na entrada
+            for (let i = 0; i < numVertices; i++) {
+                const row = lines[i];
+                for (let j = 0; j < numVertices; j++) {
+                    if (row[j] !== 999 && row[j] !== 0) {
+                        graph.addEdge(`V${i + 1}`, `V${j + 1}`, row[j]);
+                        if (isGraphUndirected) {
+                            graph.addEdge(`V${j + 1}`, `V${i + 1}`, row[j]);
+                        }
+                    }
+                }
+            }
+
+            displayResults(graph, startVertex);
+        }
+
+    function displayResults(graph, startVertex) {
+      const outputDiv = document.getElementById('output');
+      let output = `<pre>Grafo: ${JSON.stringify(graph, null, 2)}</pre>`;
+
+      // Adicionando resultados de cada método com o vértice de partida especificado
+      console.log(graph, startVertex)
+      output += `<pre>BFS (a partir de ${startVertex}): ${JSON.stringify(graph.bfs(startVertex), null, 2)}</pre>`;
+      output += `<pre>DFS (a partir de ${startVertex}): ${JSON.stringify(graph.dfs(startVertex), null, 2)}</pre>`;
+      output += `<pre>Dijkstra (a partir de ${startVertex}): ${JSON.stringify(graph.dijkstra(startVertex), null, 2)}</pre>`;
+      output += `<pre>Prim (a partir de ${startVertex}): ${JSON.stringify(graph.prim(startVertex), null, 2)}</pre>`;
+
+      try {
+        const topoSort = graph.topologicalSort();
+        output += `<pre>Ordenação Topológica: ${JSON.stringify(topoSort, null, 2)}</pre>`;
+      } catch (error) {
+        output += `<pre>Error (Ordenação Topológica): ${error.message}</pre>`;
+      }
+
+      output += `<pre>Ciclo Euleriano: ${graph.hasEulerianCycle()}</pre>`;
+
+      outputDiv.innerHTML = output;
+    }
+  </script>
+</body>
+
+</html>

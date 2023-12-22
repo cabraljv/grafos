@@ -1,4 +1,37 @@
-const PriorityQueue = require("./PriorityQueue");
+class PriorityQueue {
+  constructor() {
+      this.items = [];
+  }
+
+  enqueue(element, priority) {
+      const queueElement = { element, priority };
+      let added = false;
+
+      for (let i = 0; i < this.items.length; i++) {
+          if (queueElement.priority < this.items[i].priority) {
+              this.items.splice(i, 0, queueElement);
+              added = true;
+              break;
+          }
+      }
+
+      if (!added) {
+          this.items.push(queueElement);
+      }
+  }
+
+  dequeue() {
+      if (this.isEmpty()) {
+          throw new Error("Queue is empty");
+      }
+      return this.items.shift().element;
+  }
+
+  isEmpty() {
+      return this.items.length === 0;
+  }
+
+}
 
 class Graph {
   constructor() {
@@ -18,7 +51,7 @@ class Graph {
     this.addNode(node2);
     this.nodes[node1].push(node2);
     this.edges[`${node1}-${node2}`] = weight;
-}
+  }
 
   // Métodos para implementar algoritmos de grafos...
   bfs(start) {
@@ -58,7 +91,7 @@ class Graph {
     dfsVisit(start);
     return result;
   }
-  
+
   dijkstra(start) {
     const distances = {};
     const predecessors = {};
@@ -67,9 +100,9 @@ class Graph {
       predecessors[node] = null;
     });
     distances[start] = 0;
-  
+
     const visited = {};
-  
+
     while (Object.keys(visited).length < Object.keys(this.nodes).length) {
       let closestNode = null;
       Object.keys(distances).forEach(node => {
@@ -77,9 +110,9 @@ class Graph {
           closestNode = node;
         }
       });
-  
+
       visited[closestNode] = true;
-  
+
       this.nodes[closestNode].forEach(neighbor => {
         const distance = distances[closestNode] + this.edges[`${closestNode}-${neighbor}`];
         if (distance < distances[neighbor]) {
@@ -88,7 +121,7 @@ class Graph {
         }
       });
     }
-  
+
     const paths = {};
     Object.keys(predecessors).forEach(node => {
       const path = [];
@@ -99,10 +132,11 @@ class Graph {
       }
       paths[node] = path;
     });
-  
+
     return { distances, paths };
   }
-  
+
+
 
   prim(startNode) {
     const minTree = new Graph();
@@ -128,6 +162,30 @@ class Graph {
     }
 
     return minTree;
+  }
+
+  getAdjacencyMatrix() {
+    const matrix = [];
+    const nodeKeys = Object.keys(this.nodes);
+
+    nodeKeys.forEach((node, i) => {
+      matrix[i] = new Array(nodeKeys.length).fill(0);
+      this.nodes[node].forEach(neighbor => {
+        const j = nodeKeys.indexOf(neighbor);
+        matrix[i][j] = this.edges[`${node}-${neighbor}`];
+      });
+    });
+
+    return matrix;
+  }
+  
+  hasNode(node) {
+    return this.nodes.hasOwnProperty(node);
+  }
+  printAdjacencyMatrix() {
+    const matrix = this.getAdjacencyMatrix();
+    console.log('Matriz de Adjacência:');
+    matrix.forEach(row => console.log(row.join(' ')));
   }
 
   topologicalSort() {
@@ -172,6 +230,7 @@ class Graph {
 
     for (let node in this.nodes) {
       if (this.nodes[node].length % 2 !== 0) {
+        console.log()
         oddDegreeCount++;
       }
     }
@@ -180,5 +239,3 @@ class Graph {
     return oddDegreeCount === 0;
   }
 }
-
-module.exports = Graph;

@@ -1,64 +1,61 @@
 const Graph = require('./Graph'); // Substitua './Graph' pelo caminho correto do seu arquivo de classe Graph
 const fs = require('fs');
 
+
+function isUndirected(lines, numVertices) {
+  for (let i = 1; i < numVertices; i++) {
+      for (let j = 0; j < i; j++) {
+          if (lines[i][j] !== 0) {
+              return false;
+          }
+      }
+  }
+  return true;
+}
+
 function readFileData(filepath) {
   const content = fs.readFileSync(filepath, 'utf8');
-  const lines = content.split('\n');
+  const lines = content.split('\n').map(line => line.trim().split(/\s+/).map(Number));
+  const numVertices = lines.shift()[0];
   const graph = new Graph();
-  const numVertices = parseInt(lines[0], 10);
-  
-  for (let i = 1; i <= numVertices; i++) {
-      const row = lines[i].trim().split(/\s+/).map(Number);
+  const isGraphUndirected = isUndirected(lines, numVertices);
+
+  for (let i = 0; i < numVertices; i++) {
+      const row = lines[i];
+      if (!graph.hasNode(`V${i + 1}`)) {
+          graph.addNode(`V${i + 1}`);
+      }
+
       for (let j = 0; j < numVertices; j++) {
           if (row[j] !== 999 && row[j] !== 0) {
-              graph.addNode(`V${i}`);
-              graph.addNode(`V${j+1}`);
-              graph.addEdge(`V${i}`, `V${j+1}`, row[j]);
+              if (!graph.hasNode(`V${j + 1}`)) {
+                  graph.addNode(`V${j + 1}`);
+              }
+
+              graph.addEdge(`V${i + 1}`, `V${j + 1}`, row[j]);
+              if (isGraphUndirected) {
+                  graph.addEdge(`V${j + 1}`, `V${i + 1}`, row[j]);
+              }
           }
       }
   }
 
   return graph;
 }
-const graph1 = readFileData('grafo_simples.txt');
-console.log('Grafo Simples Valorado:', graph1);
 
-// Testes para Grafo Simples Valorado
-console.log('BFS:', graph1.bfs('V1'));
-console.log('DFS:', graph1.dfs('V1'));
-console.log('Dijkstra:', graph1.dijkstra('V1'));
-console.log('Prim:', graph1.prim('V1'));
-console.log('Ordenação Topológica:', graph1.topologicalSort());
-console.log('Ciclo Euleriano:', graph1.hasEulerianCycle());
 
-const graph2 = readFileData('digrafo_simples.txt');
-console.log('\nDigrafo Simples Valorado:', graph2);
+const graph = readFileData('input.txt');
+console.log('Grafo:', graph);
+graph.printAdjacencyMatrix();
 
-// Testes para Digrafo Simples Valorado
-console.log('BFS:', graph2.bfs('V1'));
-console.log('DFS:', graph2.dfs('V1'));
-console.log('Dijkstra:', graph2.dijkstra('V1'));
-// O Prim não é aplicável para digrafos
-// Ordenação Topológica e Ciclo Euleriano podem ser testados se o digrafo for adequado
 
-const graph3 = readFileData('grafo_nao_orientado.txt');
-console.log('\nGrafo Não Orientado Valorado:', graph3);
-
-// Testes para Grafo Não Orientado Valorado
-console.log('BFS:', graph3.bfs('V1'));
-console.log('DFS:', graph3.dfs('V1'));
-console.log('Dijkstra:', graph3.dijkstra('V1'));
-console.log('Prim:', graph3.prim('V1'));
-console.log('Ordenação Topológica:', graph3.topologicalSort());
-console.log('Ciclo Euleriano:', graph3.hasEulerianCycle());
-
+console.log('BFS:', graph.bfs('V1'));
+console.log('DFS:', graph.dfs('V1'));
+console.log('Dijkstra:', graph.dijkstra('V1'));
+console.log('Prim:', graph.prim('V1'));
 try {
-  console.log('Ordenação Topológica:', graph2.topologicalSort());
+    console.log('Ordenação Topológica:', graph.topologicalSort());
 } catch (error) {
-  console.log(error.message)
+    console.log(error.message);    
 }
-try {
-  console.log('Ciclo Euleriano:', graph2.hasEulerianCycle());
-} catch (error) {
-  console.log(error.message)
-}
+console.log('Ciclo Euleriano:', graph.hasEulerianCycle());
